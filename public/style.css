@@ -1,0 +1,65 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    background: linear-gradient(180deg, #ffefba, #ffffff);
+    padding: 20px;
+  }
+  
+  h1 {
+    color: #e67e22;
+  }
+  
+  #ziggy {
+    width: 220px;
+    /*animation: bounce 2s infinite ease-in-out;*/
+  }
+  
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  button {
+    margin: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #f1c40f;
+    color: #333;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #f39c12;
+  }
+  
+  #speech {
+    margin: 20px auto;
+    width: 60%;
+    font-size: 1.2em;
+    min-height: 60px;
+    border: 2px solid #e1e1e1;
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  /* 🦁 Ziggy Animation */
+#ziggy {
+    width: 250px;
+    transition: transform 0.1s ease-in-out;
+  }
+  
+  #ziggy {
+    width: 250px;
+    transition: transform 0.1s ease-in-out;
+  }
+  
+  #ziggy.talking {
+    animation: talkBounce 0.25s infinite alternate ease-in-out;
+    filter: drop-shadow(0 0 10px gold);
+  }
+  
+  @keyframes talkBounce {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1.05) rotate(-2deg); }
+  }
