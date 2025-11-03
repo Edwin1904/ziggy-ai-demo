@@ -1,12 +1,20 @@
 {
+  "name": "ziggy-ai",
+  "version": "1.0.0",
+  "description": "Ziggy AI - Interactive educational assistant with voice, animations, and math games.",
+  "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.19.0",
     "dotenv": "^16.4.5",
-    "openai": "^4.70.0"
-  }
+    "express": "^4.19.0",
+    "openai": "^4.70.0",
+    "socket.io": "^4.8.1"
+  },
+  "engines": {
+    "node": ">=18.x"
+  },
+  "license": "MIT"
 }
-

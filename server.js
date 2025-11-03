@@ -12,36 +12,43 @@ const openai = new OpenAI({
 });
 
 app.post("/ziggy", async (req, res) => {
-  const { mode } = req.body;
+  const { mode, prompt: clientPrompt } = req.body;
   let prompt = "";
 
-  // Common intro tone for all modes
-  const baseTone = `
-  Eres Ziggy, un león rastafari amistoso y divertido. 
-  Habla con los niños en español usando expresiones caribeñas como 
-  “yeah man”, “mi hermano”, “irie vibes” o “mi pequeño león”. 
-  Usa un tono alegre, relajado y educativo. 
-  No traduzcas esas frases al español — déjalas tal cual. 
-  Mantén una vibra positiva, divertida y de maestro sabio.
-  `;
+  // ✅ Use the frontend explanation prompt if provided
+  if (clientPrompt && typeof clientPrompt === "string" && clientPrompt.trim().length > 0) {
+    prompt = clientPrompt.trim();
+  } else {
+    // Common intro tone for all modes
+    const baseTone = `
+    Eres Ziggy, un león rastafari amistoso y divertido. 
+    Habla con los niños en español usando expresiones caribeñas como 
+    “yeah man”, “mi hermano”, “irie vibes” o “mi pequeño león”. 
+    Usa un tono alegre, relajado y educativo. 
+    No traduzcas esas frases al español — déjalas tal cual. 
+    Mantén una vibra positiva, divertida y de maestro sabio.
+    `;
 
-  if (mode === "saluda") {
-    prompt = `${baseTone}
-    Saluda a los niños con energía y entusiasmo, 
-    dales la bienvenida a la jungla de las matemáticas.`;
-  } else if (mode === "multiplicar") {
-    prompt = `${baseTone}
-    Explica cómo multiplicar de forma sencilla, con ejemplos usando frutas o juguetes.
-    Termina animándolos con un “yeah man” o “irie vibes”.`;
-  } else if (mode === "jugar") {
-    prompt = `${baseTone}
-    Juega al “Juego del León” con cinco preguntas de multiplicación. 
-    Espera unos segundos antes de decir la respuesta. 
-    Después de cada acierto, anima con frases como “¡Excelente, mi hermano!” o “¡Yeah man, irie vibes!”`;
-  } else if (mode === "despedirse") {
-    prompt = `${baseTone}
-    Despídete con cariño y alegría, 
-    diciéndoles que sigan estudiando con irie vibes.`;
+    if (mode === "saluda") {
+      prompt = `${baseTone}
+      Saluda a los niños con energía y entusiasmo, 
+      dales la bienvenida a la jungla de las matemáticas.`;
+    } else if (mode === "multiplicar") {
+      prompt = `${baseTone}
+      Explica cómo multiplicar de forma sencilla, con ejemplos usando frutas o juguetes.
+      Termina animándolos con un “yeah man” o “irie vibes”.`;
+    } else if (mode === "jugar") {
+      prompt = `${baseTone}
+      Juega al “Juego del León” con cinco preguntas de multiplicación. 
+      Espera unos segundos antes de decir la respuesta. 
+      Después de cada acierto, anima con frases como “¡Excelente, mi hermano!” o “¡Yeah man, irie vibes!”`;
+    } else if (mode === "despedirse") {
+      prompt = `${baseTone}
+      Despídete con cariño y alegría, 
+      diciéndoles que sigan estudiando con irie vibes.`;
+    } else {
+      prompt = `${baseTone} Da una breve explicación educativa, mi hermano.`;
+    }
   }
 
   try {
@@ -84,5 +91,62 @@ app.post("/tts", async (req, res) => {
   }
 });
 
-// ✅ Server start
-app.listen(3000, () => console.log("✅ Ziggy running at http://localhost:3000"));
+// 🎮 Multiplayer Game Logic (added without changing Ziggy AI prompts)
+import http from "http";
+import { Server } from "socket.io";
+
+const server = http.createServer(app);
+const io = new Server(server);
+
+let players = {};
+let currentQuestion = null;
+
+const gameQuestions = [
+  { text: "¿Cuánto es 3 × 4?", options: [8, 10, 12, 14], correct: 12 },
+  { text: "¿Cuánto es 7 + 5?", options: [10, 12, 13, 14], correct: 12 },
+  { text: "¿Cuánto es 9 - 3?", options: [5, 6, 7, 9], correct: 6 },
+  { text: "¿Cuánto es 5 × 2?", options: [8, 10, 12, 14], correct: 10 }
+];
+
+io.on("connection", socket => {
+  console.log("🟢 Player connected:", socket.id);
+
+  socket.on("joinGame", name => {
+    players[socket.id] = { name, score: 0, progress: 0 };
+    io.emit("updatePlayers", players);
+  });
+
+  socket.on("answer", answer => {
+    if (currentQuestion && parseInt(answer) === currentQuestion.correct) {
+      players[socket.id].score += 1;
+      players[socket.id].progress += 10;
+    } else {
+      players[socket.id].progress += 3; // small progress even if wrong
+    }
+    io.emit("updatePlayers", players);
+  });
+
+  socket.on("startGame", () => {
+    let qIndex = 0;
+    const sendNextQuestion = () => {
+      if (qIndex < gameQuestions.length) {
+        currentQuestion = gameQuestions[qIndex];
+        io.emit("question", currentQuestion);
+        qIndex++;
+        setTimeout(sendNextQuestion, 12000);
+      } else {
+        io.emit("gameOver", players);
+        players = {};
+      }
+    };
+    sendNextQuestion();
+  });
+
+  socket.on("disconnect", () => {
+    delete players[socket.id];
+    io.emit("updatePlayers", players);
+  });
+});
+
+// ✅ Replace app.listen with this line
+server.listen(3000, () => console.log("✅ Ziggy running with multiplayer at http://localhost:3000"));

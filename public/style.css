@@ -1,65 +1,295 @@
-body {
-    font-family: 'Poppins', sans-serif;
-    text-align: center;
-    background: linear-gradient(180deg, #ffefba, #ffffff);
-    padding: 20px;
-  }
-  
-  h1 {
-    color: #e67e22;
-  }
-  
-  #ziggy {
-    width: 220px;
-    /*animation: bounce 2s infinite ease-in-out;*/
-  }
-  
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  
-  button {
-    margin: 8px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 10px;
-    background: #f1c40f;
-    color: #333;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #f39c12;
-  }
-  
-  #speech {
-    margin: 20px auto;
-    width: 60%;
-    font-size: 1.2em;
-    min-height: 60px;
-    border: 2px solid #e1e1e1;
-    padding: 10px;
-    border-radius: 10px;
-  }
+/* ======= Base Layout ======= */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+  color: #fff;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
-  /* 🦁 Ziggy Animation */
-#ziggy {
-    width: 250px;
-    transition: transform 0.1s ease-in-out;
+/* Optional background image */
+body.has-leaves {
+  background: url("background_leaves.png") center center / cover no-repeat fixed, #000;
+}
+
+/* ======= Ziggy Video Stage ======= */
+#ziggy-container {
+  position: relative;
+  width: 90vw;
+  max-width: 900px;
+  height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.8s ease;
+  z-index: 8;
+}
+
+/* ======= Ziggy Video Fix (Stable Playback) ======= */
+#ziggy-container video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.5s ease-in-out;
+  z-index: 10;
+  background: transparent;
+}
+
+#ziggy-container video.active {
+  opacity: 1;
+  visibility: visible;
+  display: block;
+  z-index: 15;
+  animation: fadeInSmooth 0.5s ease-in-out forwards;
+}
+
+/* ======= Ziggy Listening Indicator ======= */
+#ziggy-status {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.1rem;
+  color: #00ffcc;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(0, 255, 204, 0.8);
+  z-index: 16;
+  pointer-events: none;
+  background: rgba(0,0,0,0.4);
+  padding: 6px 14px;
+  border-radius: 8px;
+}
+
+#ziggy_idle.active {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* ======= Game Area ======= */
+#game-area {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+  z-index: 150;
+  display: none;
+}
+
+#question {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px #f1c40f;
+  animation: popIn 0.5s ease-out;
+  position: relative;
+  z-index: 1;
+}
+
+#game-area::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 40%;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  z-index: 0;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ======= Controls ======= */
+#controls, .buttons {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  z-index: 20;
+}
+
+button {
+  padding: 10px 18px;
+  border: 2px solid #f1c40f;
+  border-radius: 10px;
+  background: #000;
+  color: #f1c40f;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.25s ease;
+  opacity: 0.85;
+  box-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
+}
+
+button:hover {
+  background: #f1c40f;
+  color: #000;
+  transform: scale(1.05);
+  opacity: 1;
+  box-shadow: 0 0 20px rgba(241, 196, 15, 0.6);
+}
+
+/* ======= Small Ziggy Mode ======= */
+#ziggy-small {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  width: 220px;
+  height: 160px;
+  transform: translate(-30%, 30%) scale(0.6);
+  z-index: 3;
+  transition: transform 1s cubic-bezier(0.68,-0.55,0.27,1.55);
+  animation: ziggySlideIn 1s ease forwards;
+}
+
+@keyframes ziggySlideIn {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  50% { transform: translate(-15%, 20%) scale(0.8); opacity: 0.95; }
+  100% { transform: translate(-30%, 30%) scale(0.6); opacity: 1; }
+}
+
+/* ======= Mode Selector ======= */
+#mode-select {
+  position: fixed;
+  top: 15px;
+  right: 25px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f1c40f;
+  font-weight: 700;
+  font-size: 1.1rem;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 8px 12px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+  backdrop-filter: blur(6px);
+  z-index: 25;
+}
+
+#mode {
+  background: #111;
+  color: #f1c40f;
+  border: 2px solid #f1c40f;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+#mode:hover {
+  background: #222;
+  box-shadow: 0 0 10px rgba(241, 196, 15, 0.6);
+}
+
+#mode option {
+  background: #000;
+  color: #fff;
+}
+
+/* ======= Responsive ======= */
+@media (max-width: 600px) {
+  #ziggy-container { width: 95vw; height: 60vh; }
+  #question { font-size: 2rem; }
+  button { font-size: 0.9rem; padding: 8px 14px; }
+}
+
+/* ======= Hidden Elements ======= */
+#speech { display: none !important; }
+
+/* ======= Settings Menu ======= */
+#settings-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #000;
+  border: 2px solid #f1c40f;
+  color: #f1c40f;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: all 0.3s;
+  opacity: 0.7;
+  z-index: 9999;
+}
+
+#settings-btn:hover {
+  opacity: 1;
+  transform: rotate(45deg);
+}
+
+#settings-menu {
+  display: none;
+  position: fixed;
+  bottom: 80px;
+  right: 25px;
+  background: rgba(0, 0, 0, 0.95);
+  border: 2px solid #f1c40f;
+  color: #f1c40f;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  z-index: 9999;
+  width: 240px;
+  box-shadow: 0 0 20px rgba(241, 196, 15, 0.3);
+  text-align: left;
+}
+
+#settings-menu.show {
+  display: block;
+}
+
+#settings-menu input[type="range"] {
+  width: 100%;
+}
+
+/* ======= Debug Visibility Fix ======= */
+/* video {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 9999 !important;
+} */
+@media (max-width: 480px) {
+  button {
+    font-size: 0.8rem;
+    padding: 6px 10px;
   }
-  
-  #ziggy {
-    width: 250px;
-    transition: transform 0.1s ease-in-out;
-  }
-  
-  #ziggy.talking {
-    animation: talkBounce 0.25s infinite alternate ease-in-out;
-    filter: drop-shadow(0 0 10px gold);
-  }
-  
-  @keyframes talkBounce {
-    from { transform: scale(1) rotate(0deg); }
-    to { transform: scale(1.05) rotate(-2deg); }
-  }
+}
+
+@keyframes fadeInSmooth {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#ziggy-container video.active {
+  animation: fadeInSmooth 0.4s ease-in-out;
+}

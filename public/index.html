@@ -5,18 +5,77 @@
   <title>Ziggy el León 🦁</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <h1>🦁 Ziggy AI Demo</h1>
-  <img id="ziggy" src="ziggy - Edited.png" alt="Ziggy el León" sizes="100px">
-  <div id="speech">Haz clic en un botón para hablar con Ziggy.</div>
+<body class="has-leaves">
 
-  <div class="buttons">
-    <button onclick="ziggyAction('saluda')">🦁 Saludar</button>
-    <button onclick="ziggyAction('multiplicar')">✖️ Enseñar</button>
-    <button onclick="ziggyAction('jugar')">🎮 Jugar</button>
-    <button onclick="ziggyAction('despedirse')">👋 Despedirse</button>
+  <!-- Mode Selector -->
+  <div id="mode-select">
+    <label for="mode">🎮 Selecciona Modo:</label>
+    <select id="mode">
+      <option value="easy">Fácil (Multiplicación)</option>
+      <option value="medium">Medio (Suma y Resta)</option>
+      <option value="hard">Difícil (Fracciones)</option>
+      <option value="bonus">Desafío Rápido (Porcentajes)</option>
+    </select>
   </div>
 
+  <!-- Ziggy Video States -->
+  <div id="ziggy-container" style="position:relative; display:flex; justify-content:center; align-items:center; height:80vh;">
+    <video id="ziggy-idle" class="active" autoplay muted loop playsinline preload="auto">
+      <source src="ziggy-idle.mp4" type="video/mp4">
+      Tu navegador no soporta video.
+    </video>
+
+    <video id="ziggy-talking" autoplay muted loop playsinline preload="auto">
+      <source src="ziggy-talking.mp4" type="video/mp4">
+      Tu navegador no soporta video.
+    </video>
+
+    <video id="ziggy-thinking" autoplay muted loop playsinline preload="auto">
+      <source src="ziggy-thinking.mp4" type="video/mp4">
+      Tu navegador no soporta video.
+    </video>
+
+    <video id="ziggy-listening" autoplay muted loop playsinline preload="auto">
+      <source src="ziggy-listening.mp4" type="video/mp4">
+      Tu navegador no soporta video.
+    </video>
+  </div>
+
+  <!-- Ziggy Status Indicator -->
+  <div id="ziggy-status"></div>
+
+  <!-- Control Buttons -->
+  <div class="buttons">
+    <button onclick="ziggyAction('saluda')">👋 Hola</button>
+    <button onclick="ziggyAction('explicar')">📖 Explicar</button>
+    <button onclick="startGame()">🎮 Jugar</button>
+    <button onclick="ziggyAction('despedirse')">👋 Adiós</button>
+    <p id="heard-text" style="font-style: italic;"></p> 
+  </div>
+
+  <!-- Game Section -->
+  <div id="game-area" style="margin-top: 20px;">
+    <p id="question" style="font-size: 1.2rem; font-weight: bold;"></p>
+    <input id="answer" type="number" placeholder="Tu respuesta" />
+    <button id="submit-answer">Responder</button>
+    <p id="feedback"></p>
+  </div>
+
+  <!-- Multiplayer Race Section (commented out for now) -->
+  <!--
+  <div id="race-section" style="margin-top: 30px; text-align: center;">
+    <h2>🏁 Carrera de Ziggy</h2>
+    <button id="start-race" onclick="startMultiplayerRace()" style="margin-bottom: 10px; padding: 10px 20px; font-size: 1rem; border-radius: 10px; border: 2px solid #f1c40f; background: #000; color: #f1c40f; cursor: pointer; transition: all 0.2s;">
+      🚦 Iniciar Carrera
+    </button>
+    <div id="race-track" style="position: relative; width: 90%; height: 120px; margin: 0 auto; background-color: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden; border: 2px solid #f1c40f;">
+      <div id="ziggy-car" class="lion" style="position: absolute; top: 10px; left: 0; width: 80px; transition: left 0.5s;">🦁 Ziggy</div>
+      <div id="player-cars"></div>
+    </div>
+  </div>
+  -->
+
+  <!-- Main Script -->
   <script src="app.js"></script>
 </body>
 </html>
