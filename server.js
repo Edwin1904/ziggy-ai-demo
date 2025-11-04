@@ -5,7 +5,13 @@ import OpenAI from "openai";
 dotenv.config();
 const app = express();
 app.use(express.json());
+
 app.use(express.static("public"));
+
+// ✅ Root route to verify service and redirect to main page
+app.get("/", (req, res) => {
+  res.sendFile("index.html", { root: "public" });
+});
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
