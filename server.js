@@ -149,4 +149,6 @@ io.on("connection", socket => {
 });
 
 // ✅ Replace app.listen with this line
-server.listen(3000, () => console.log("✅ Ziggy running with multiplayer at http://localhost:3000"));
+const PORT = process.env.PORT || 10000;
+const HOST = '0.0.0.0';
+server.listen(PORT, HOST, () => console.log(`✅ Ziggy running at http://${HOST}:${PORT}`));
